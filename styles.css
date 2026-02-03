@@ -1,0 +1,641 @@
+:root {
+    --color-bg: #080808;
+    --color-paper: #e0e0e0;
+    --color-ink: #111;
+    --color-red: #8a0303;
+    /* Dried blood */
+    --color-stamp: rgba(180, 20, 20, 0.7);
+    --font-heading: 'Impact', 'Arial Black', sans-serif;
+    /* Heavy block font */
+    --font-typewriter: 'Courier New', Courier, monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-paper);
+    font-family: var(--font-typewriter);
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: crosshair;
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+    /* Subtle ink bleed */
+}
+
+/* Background Effects */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gritty noise + Flashlight Vignette with White Core */
+    background:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+        radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.15) 0%, transparent 120px, rgba(5, 5, 5, 0.98) 150%);
+    pointer-events: none;
+    z-index: 90;
+    mix-blend-mode: hard-light;
+    /* Helps the white pop */
+}
+
+.container {
+    max-width: 900px;
+    /* Narrower for document feel */
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    position: relative;
+    z-index: 95;
+    background: rgba(20, 20, 20, 0.4);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    min-height: 100vh;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-weight: normal;
+    /* Headings are already heavy */
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-size: 3.5rem;
+    /* Larger impact */
+    border-bottom: 4px double var(--color-red);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    /* Blood Submersion Effect - Multi-Layer Splatter (Mist + Drops) */
+    /* 
+       Complex SVG Data URI:
+       - Layer 1 (Mist): High frequency noise (0.9) for small dots (80%).
+       - Layer 2 (Drops): Low frequency noise (0.15) for big drops (20%).
+       - Composite: Merges the two laters to create a varied distribution.
+    */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='blood-grad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234a0000' /%3E%3Cstop offset='45%25' stop-color='%23ff0000' /%3E%3Cstop offset='60%25' stop-color='%23660000' /%3E%3Cstop offset='100%25' stop-color='%23110000' /%3E%3C/linearGradient%3E%3Cfilter id='mixed-splatter'%3E%3C!-- 1. Fine Mist (80%) --%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='3' result='noise_mist' /%3E%3CfeColorMatrix in='noise_mist' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -9' result='mask_mist' /%3E%3C!-- 2. Big Drops (20%) --%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='2' seed='5' result='noise_drops' /%3E%3CfeColorMatrix in='noise_drops' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 35 -20' result='mask_drops' /%3E%3C!-- 3. Combine --%3E%3CfeComposite operator='arithmetic' k2='1' k3='1' in='mask_mist' in2='mask_drops' result='combined_mask' /%3E%3C!-- 4. Apply --%3E%3CfeComposite operator='in' in='SourceGraphic' in2='combined_mask' /%3E%3C/filter%3E%3C/defs%3E%3C!-- Base Paper --%3E%3Crect width='100%25' height='100%25' fill='%23e0e0e0' /%3E%3C!-- Solid blood bottom --%3E%3Cpath d='M0 100 L0 60 L20 62 L40 58 L60 63 L80 59 L100 61 L100 100 Z' fill='url(%23blood-grad)' /%3E%3C!-- Splatter Layer --%3E%3Crect width='100%25' height='70%25' y='0' fill='url(%23blood-grad)' filter='url(%23mixed-splatter)' opacity='0.95' /%3E%3C/svg%3E");
+
+    background-size: 100% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    /* Slight blur to integrate the noise nicely */
+    filter: drop-shadow(0px 1px 0px rgba(0, 0, 0, 0.8));
+}
+
+.case-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+    border: 1px solid #333;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.stamp-top-secret {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    border: 3px solid var(--color-stamp);
+    color: var(--color-stamp);
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transform: rotate(-15deg);
+    opacity: 0.8;
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+}
+
+.coming-soon {
+    font-size: 1.2rem;
+    color: var(--color-paper);
+    margin-top: 1rem;
+    background: #000;
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+}
+
+/* Sections */
+section {
+    margin-bottom: 6rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    border-bottom: 1px dashed var(--color-red);
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    display: block;
+    color: var(--color-red);
+    text-align: center;
+    /* Centering the header */
+}
+
+/* Gallery & Frames */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* Smaller archival photos */
+    gap: 1.5rem;
+}
+
+.gif-frame {
+    aspect-ratio: 1 / 1;
+    background-color: #0f0f0f;
+    border: 1px dashed #444;
+    /* Dashed specifically */
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    padding: 5px;
+    /* Photo border padding */
+}
+
+.gif-frame:hover {
+    border-color: #ff0000;
+    /* Pure bright red */
+    transform: rotate(1deg) scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+    /* Stronger glow */
+    z-index: 10;
+}
+
+.frame-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #555;
+    /* Slightly lighter text */
+    background: #1a1a1a;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.gif-frame:hover .frame-content {
+    color: #fff;
+    /* Brighten text on hover */
+}
+
+/* Dossier Info - Paper clip style */
+.dossier-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    /* Pure black for contrast */
+    color: #fff;
+    /* White text */
+    padding: 0.8rem;
+    border-top: 2px solid #ff0000;
+    transform: translateY(100%);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.8rem;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.8);
+}
+
+.gif-frame:hover .dossier-info {
+    transform: translateY(0);
+}
+
+/* Redacted Text Effect - Duct Tape Style */
+.redacted {
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    /* Text hidden by default */
+    font-weight: bold;
+
+    /* Shiny Gray Tape Gradient */
+    background: linear-gradient(175deg, #888 0%, #bbb 30%, #999 60%, #666 100%);
+
+    padding: 0 8px;
+    margin: 0 4px;
+
+    /* Slanted and realistic tape look */
+    transform: rotate(-1.5deg) skewX(-2deg);
+
+    /* Ragged/Torn Edges using Clip Path */
+    clip-path: polygon(2% 0%, 98% 2%, 100% 10%, 97% 25%, 100% 40%, 98% 60%, 100% 80%, 99% 100%,
+            1% 98%, 3% 80%, 0% 60%, 2% 40%, 0% 20%, 3% 5%);
+
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    /* Shadow for depth */
+    cursor: help;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.redacted:hover {
+    color: #000;
+    /* Reveal text in black */
+    background: #e0e0e0;
+    /* Tape becomes paper colored or fades */
+    transform: rotate(0deg) scale(1.05);
+    /* Straighten up */
+    clip-path: none;
+    /* Restore edges */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    text-shadow: none;
+}
+
+/* About Section */
+.about-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    border: 1px solid #333;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.6);
+    /* Darker background */
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.photo-frame {
+    width: 150px;
+    height: 180px;
+    border: 2px solid #888;
+    background: url('Photo (1).jpg') no-repeat center center;
+    background-size: cover;
+    background-color: #111;
+    position: relative;
+    transform: rotate(-2deg);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
+    transition: transform 0.3s;
+}
+
+.photo-frame:hover {
+    transform: rotate(0deg) scale(1.05);
+    border-color: #fff;
+}
+
+.photo-frame::after {
+    content: "";
+    /* Simulate tape */
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 40px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-text h3 {
+    border-bottom: 2px solid #500;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #eee;
+}
+
+.about-text p {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* =========================================
+   SPLASH SCREEN & INTRO
+   ========================================= */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+
+#splash-content {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Splash Title (Reusing Blood Effect) */
+.splash-title {
+    font-size: 5rem;
+    /* Larger */
+    font-family: var(--font-heading);
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
+    opacity: 1;
+    text-decoration: none !important;
+    border-bottom: none !important;
+
+    animation: pulseBlood 3s infinite ease-in-out;
+}
+
+/* Unreal Engine Logo Style */
+.ue-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in;
+    /* Fade in duration */
+}
+
+.ue-logo.visible {
+    opacity: 1 !important;
+    display: flex !important;
+}
+
+/* 
+   The SCALE UP effect during fade out 
+   When the logo container gets .fade-out, the image inside scales up.
+*/
+.ue-logo.fade-out .ue-image,
+.ue-logo.fade-out .ue-text-bottom {
+    transform: scale(1.3);
+    transition: transform 3s ease-out;
+}
+
+.ue-image {
+    max-width: 80%;
+    width: 150px;
+    /* Significantly smaller as requested */
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.1));
+    margin-bottom: 1rem;
+    /* Spacing between logo and text */
+    transform: scale(1);
+    transition: transform 0.5s ease-out;
+}
+
+/* Bottom Text Styling */
+.ue-text-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-family: Arial, sans-serif;
+    /* Standard font, not "Black" */
+    color: #ffffff !important;
+    /* Force White */
+    font-size: 5rem;
+    line-height: 0.85;
+    /* Very tight stacking */
+    font-weight: bold;
+    /* Standard bold (700) instead of 900 */
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-top: 0.5rem;
+
+    opacity: 0;
+    transform: scale(1);
+    transition: opacity 1s ease-in, transform 0.5s ease-out;
+}
+
+.ue-line {
+    display: block;
+    /* Ensure no margins interfere */
+    margin: 0;
+    padding: 0;
+}
+
+.ue-text-bottom.visible {
+    opacity: 1 !important;
+}
+
+/* 
+   State Management Classes 
+*/
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.fade-out {
+    opacity: 0 !important;
+    transition: opacity 2s ease-out;
+}
+
+/*
+   "Building from Dust" Reveal Effect
+   Applied to .container when splash finishes
+*/
+.dust-reveal {
+    animation: formFromDust 12s ease-out forwards;
+}
+
+@keyframes formFromDust {
+    0% {
+        opacity: 0;
+        filter: blur(20px) contrast(200%) sepia(100%);
+        transform: scale(1.05);
+    }
+
+    10% {
+        opacity: 1;
+        filter: blur(15px) contrast(150%) sepia(100%);
+    }
+
+    /* Long slow settle period */
+
+    90% {
+        filter: blur(1px) contrast(105%) sepia(5%);
+        /* Almost clear, effectively invisible change to 100% */
+    }
+
+    100% {
+        opacity: 1;
+        filter: blur(0) contrast(100%) sepia(0%);
+        transform: scale(1);
+    }
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 3rem 0;
+    border-top: 1px solid #333;
+    margin-top: 4rem;
+    opacity: 0.9;
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    color: #888;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: bold;
+    font-family: var(--font-heading);
+    /* Match header font for logos */
+    border: 1px solid #333;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 100px;
+}
+
+.social-icon {
+    display: block;
+    /* Ensure visibility */
+    width: 24px;
+    height: 24px;
+}
+
+.social-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: #888;
+    transition: fill 0.2s;
+}
+
+.social-link:hover {
+    color: #fff;
+    background: #8a0303;
+    border-color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.social-link:hover .social-icon svg {
+    fill: #fff;
+}
+
+/* Ensure mobile responsiveness */
+@media (max-width: 768px) {
+    .about-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .stamp-top-secret {
+        font-size: 1rem;
+        right: 10px;
+        top: 5px;
+    }
+}
+
+/* Hidden Clue Mechanics */
+.hidden-clue {
+    color: #555;
+    /* Lighter gray to ensure visibility */
+    cursor: cell;
+    font-size: 0.8rem;
+    transition: all 0.5s ease;
+    text-shadow: none;
+    user-select: none;
+}
+
+.hidden-clue::before {
+    content: attr(data-secret);
+    color: var(--color-red);
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    background: #000;
+    padding: 2px 5px;
+    border: 1px dashed var(--color-red);
+    z-index: 100;
+    pointer-events: none;
+}
+
+.hidden-clue:hover {
+    color: var(--color-red);
+    text-shadow: 0 0 5px var(--color-red);
+}
+
+.hidden-clue:hover::before {
+    opacity: 1;
+    transform: scale(1) translateY(-20px);
+}
+
+/* 
+   Flashlight Disable Logic:
+   When hovering a .hidden-clue, we target the body background effect.
+   Note: Pure CSS cannot affect parent/sibling 'body::before' from a child hover easily.
+   We will use a JS helper or a clever CSS trick. 
+   
+   TRICK: We will make the hidden-clue force a 'mix-blend-mode' or high z-index overlay 
+   that cancels the flashlight, OR we accept that for pure CSS, we rely on the 
+   glow of the text overpowering the vignette.
+   
+   BETTER: We simply use JS for the "Flashlight Off" toggle as requested. 
+   See script.js update.
+*/
+
+/* =========================================
+   FINAL OVERRIDES / UTILITIES
+   ========================================= */
+.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.fade-out {
+    opacity: 0 !important;
+    transition: opacity 2s ease-out !important;
+    pointer-events: none !important;
+}
+
+.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    /* Removed global display:flex to fix main layout */
+}
+
+/* Specific fix for logo visibility */
+.ue-logo.visible {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
+/* Specific fix for text elements inside logo */
+.ue-logo .ue-text.visible {
+    display: block !important;
+    opacity: 1 !important;
+}
